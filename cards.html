@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Случайный вопрос</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1000;
+  }
+  .question-container {
+    text-align: center;
+  }
+  .answer-container {
+    text-align: center;
+  }
+
+  img {
+      width: 100%;
+      max-width: 500px;
+  }
+
+  </style>
+</head>
+<body>
+<div class="question-container" id="question-container">
+  <h2>Вопрос</h2>
+  <img id="question-image" src="" alt="Question">
+</div>
+<div class="answer-container" id="answer-container">
+  <h2>Ответ</h2>
+  <img id="answer-image" src="" alt="Answer"><br>
+  <button id="know">Знаю</button>
+  <button id="dont-know">Не знаю</button>
+</div>
+
+<script>
+  class Question {
+    constructor(questionImage, answerImage, theme, questionType) {
+      this.questionImage = questionImage;
+      this.answerImage = answerImage;
+      this.theme = theme;
+      this.questionType = questionType;
+      this.showsCount = 0;
+      this.correctAnswersCount = 0;
+      this.answeredCorrectly = false;
+      this.answeredIncorrectly = false;
+      this.skipped = false;
+      this.complete1 = false;
+      this.complete2 = false;
+      this.complete3 = false;
+    }
+
+    increaseShowsCount() {
+      this.showsCount++;
+    }
+
+    increaseCorrectAnswersCount() {
+      this.correctAnswersCount++;
+      this.answeredCorrectly = true;
+      this.answeredIncorrectly = false;
+      this.skipped = false;
+    }
+
+    resetBooleanVariables() {
+      this.answeredCorrectly = false;
+      this.answeredIncorrectly = false;
+      this.skipped = false;
+    }
+  }
+
+  const questions = [];
+
+  // Пример цикла для создания экземпляров класса Question
+  for (let i = 1; i <= 10; i++) {
+      const theme = ''; // Пример условия выбора темы вопроса
+      const questionType = ''; // Пример условия выбора типа задания
+
+      const questionImage = `image/00${i}question.png`; // Генерируем путь к изображению вопроса
+      const answerImage = `image/00${i}answer.png`; // Генерируем путь к изображению ответа
+
+      const question = new Question(questionImage, answerImage, theme, questionType); // Создаем экземпляр класса Question
+      questions.push(question); // Добавляем экземпляр класса в массив questions
+  }
+
+
+
+  let currentQuestionIndex = Math.floor(Math.random() * questions.length);
+  let score = 0;
+  let ShowsCount = 0;
+  let CorrectAnswersCount = 0;
+  let percentage = 100;
+
+  function showNextQuestion() {
+
+    if (questions.length == 0) {
+      alert("Вы ответили на все вопросы! Ваш итоговый счет: " + percentage);
+      return;
+    }
+
+    currentQuestionIndex = Math.floor(Math.random() * questions.length);
+
+    const question = questions[currentQuestionIndex];
+    document.getElementById("question-image").src = question.questionImage;
+    document.getElementById("answer-image").src = question.answerImage;
+    document.getElementById("question-container").style.display = "block";
+    document.getElementById("answer-container").style.display = "none";
+    document.getElementById("know").disabled = false;
+    document.getElementById("dont-know").disabled = false;
+    question.increaseShowsCount();
+    ShowsCount++;
+  }
+
+  function showAnswer() {
+    const question = questions[currentQuestionIndex];
+    document.getElementById("answer-image").src = question.answerImage;
+    document.getElementById("question-container").style.display = "none";
+    document.getElementById("answer-container").style.display = "block";
+  }
+
+  function onKnowButtonClick() {
+    const question = questions[currentQuestionIndex];
+    question.increaseCorrectAnswersCount();
+    score++;
+    document.getElementById("know").disabled = true;
+    document.getElementById("dont-know").disabled = true;
+    question.answeredCorrectly = true;
+    question.answeredIncorrectly = false;
+    question.skipped = false;
+
+    question.complete3 = question.complete2;
+    question.complete2 = question.complete1;
+    question.complete1 = true;
+    CorrectAnswersCount++;
+    percentage = CorrectAnswersCount/ShowsCount*100;
+    checkQuestion()
+    showNextQuestion();
+  }
+
+  function onDontKnowButtonClick() {
+    const question = questions[currentQuestionIndex];
+    question.answeredCorrectly = false;
+    question.answeredIncorrectly = true;
+    question.skipped = false;
+
+    question.complete3 = question.complete2;
+    question.complete2 = question.complete1;
+    question.complete1 = false;
+
+    document.getElementById("know").disabled = true;
+    document.getElementById("dont-know").disabled = true;
+    showNextQuestion();
+  }
+
+  function checkQuestion() {
+    const question = questions[currentQuestionIndex];
+    if (question.complete2 && question.complete1) {
+      questions.splice(currentQuestionIndex, 1);
+    }
+  }
+
+  document.getElementById("know").addEventListener("click", onKnowButtonClick);
+  document.getElementById("dont-know").addEventListener("click", onDontKnowButtonClick);
+
+  // Получаем ссылку на изображение вопроса и контейнер для вопроса
+  const questionImage = document.getElementById("question-image");
+  const questionContainer = document.getElementById("question-container");
+  const answerContainer = document.getElementById("answer-container");
+
+  // Обработчик события для клика на изображение вопроса
+  questionImage.addEventListener("click", function() {
+    questionContainer.style.display = "none"; // Скрыть контейнер с вопросом
+    answerContainer.style.display = "block"; // Показать контейнер с ответом
+  });
+
+  showNextQuestion();
+</script>
+</body>
+</html>
