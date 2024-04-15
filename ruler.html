@@ -63,36 +63,35 @@ window.onload = function() {
     ruler.style.transform = 'rotate(' + rotation + 'deg)';
   });
 
+    ruler.addEventListener('touchstart', function(e) {
+        isDragging = true;
+        prevX = e.touches[0].clientX;
+        prevY = e.touches[0].clientY;
+    });
 
+    document.addEventListener('touchmove', function(e) {
+        e.preventDefault(); // Предотвращаем прокрутку страницы при перемещении объекта
+        if (isDragging) {
+            var newX = e.touches[0].clientX;
+            var newY = e.touches[0].clientY;
+            var deltaX = newX - prevX;
+            var deltaY = newY - prevY;
 
-  ruler.addEventListener('touchstart', function(e) {
-      isDragging = true;
-      prevX = e.clientX;
-      prevY = e.clientY;
-  });
+            var newLeft = ruler.offsetLeft + deltaX;
+            var newTop = ruler.offsetTop + deltaY;
 
-  document.addEventListener('touchmove', function(e) {
-      e.preventDefault(); // Предотвращаем прокрутку страницы при перемещении объекта
-      if (isDragging) {
-        var newX = e.clientX;
-        var newY = e.clientY;
-        var deltaX = newX - prevX;
-        var deltaY = newY - prevY;
+            ruler.style.left = newLeft + 'px';
+            ruler.style.top = newTop + 'px';
 
-        var newLeft = ruler.offsetLeft + deltaX;
-        var newTop = ruler.offsetTop + deltaY;
+            prevX = newX;
+            prevY = newY;
+        }
+    });
 
-        ruler.style.left = newLeft + 'px';
-        ruler.style.top = newTop + 'px';
+    document.addEventListener('touchend', function() {
+        isDragging = false;
+    });
 
-        prevX = newX;
-        prevY = newY;
-      }
-  });
-
-  document.addEventListener('touchend', function() {
-      isDragging = false;
-  });
 
 };
 </script>
