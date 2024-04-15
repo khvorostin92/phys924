@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Перемещение и вращение линейки</title>
+<style>
+  #ruler {
+    position: absolute;
+    width: 200px;
+    height: 20px;
+    background-color: #ccc;
+    cursor: pointer;
+    transform-origin: 0 50%;
+  }
+  img {
+        pointer-events: none;
+    }
+</style>
+</head>
+<body>
+
+<div id="ruler"><img id="ruler" src="ruler.svg" alt="Линейка" style="width: 200px; height: auto;">
+</div>
+
+<script>
+window.onload = function() {
+  var ruler = document.getElementById('ruler');
+  var isDragging = false;
+  var prevX, prevY;
+  var rotation = 0;
+
+  ruler.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    prevX = e.clientX;
+    prevY = e.clientY;
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (isDragging) {
+      var newX = e.clientX;
+      var newY = e.clientY;
+      var deltaX = newX - prevX;
+      var deltaY = newY - prevY;
+
+      var newLeft = ruler.offsetLeft + deltaX;
+      var newTop = ruler.offsetTop + deltaY;
+
+      ruler.style.left = newLeft + 'px';
+      ruler.style.top = newTop + 'px';
+
+      prevX = newX;
+      prevY = newY;
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    isDragging = false;
+  });
+
+  document.addEventListener('wheel', function(e) {
+    rotation += e.deltaY / 10;
+    ruler.style.transform = 'rotate(' + rotation + 'deg)';
+  });
+
+  ruler.addEventListener('touchstart', function(e) {
+  if (e.touches.length === 2) { // Проверяем, что коснулись двумя пальцами
+      var touch1 = e.touches[0];
+      var touch2 = e.touches[1];
+      initialAngle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX) * (180 / Math.PI);
+      isDragging = true;
+    }
+  });
+
+  document.addEventListener('touchmove', function(e) {
+    if (isDragging && e.touches.length === 2) {
+        var touch1 = e.touches[0];
+        var touch2 = e.touches[1];
+        var currentAngle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX) * (180 / Math.PI);
+        var rotation = currentAngle - initialAngle;
+        ruler.style.transform = 'rotate(' + rotation + 'deg)';
+    }
+  });
+
+  document.addEventListener('touchend', function() {
+    isDragging = false;
+  });
+
+};
+</script>
+
+</body>
+</html>
