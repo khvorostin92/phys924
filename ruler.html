@@ -86,6 +86,25 @@ window.onload = function() {
     isDragging = false;
   });
 
+var initialX, initialY, offsetX, offsetY;
+
+ruler.addEventListener('touchstart', function(e) {
+    var touch = e.touches[0];
+    initialX = touch.clientX - offsetX;
+    initialY = touch.clientY - offsetY;
+});
+
+ruler.addEventListener('touchmove', function(e) {
+    e.preventDefault(); // Предотвращаем прокрутку страницы при перемещении объекта
+    var touch = e.touches[0];
+    offsetX = touch.clientX - initialX;
+    offsetY = touch.clientY - initialY;
+    draggable.style.left = offsetX + 'px';
+    draggable.style.top = offsetY + 'px';
+});
+
+
+
 };
 </script>
 
