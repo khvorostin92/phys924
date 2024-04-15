@@ -13,7 +13,7 @@
     position: absolute;
     width: 200px;
     height: 20px;
-    background-color: #fff;
+    background-color: #aff;
     cursor: pointer;
     transform-origin: 0 50%;
   }
@@ -107,7 +107,7 @@ window.onload = function() {
             ruler.style.transform = 'rotate(' + rotation + 'deg)';
             initialAngle = currentAngle;
         }
-    });
+    }, { passive: false });
 
     document.addEventListener('touchend', function() {
         isDragging = false;
