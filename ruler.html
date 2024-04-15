@@ -9,7 +9,7 @@
     position: absolute;
     width: 200px;
     height: 20px;
-    background-color: #ccc;
+    background-color: #fff;
     cursor: pointer;
     transform-origin: 0 50%;
   }
@@ -29,6 +29,8 @@ window.onload = function() {
   var isDragging = false;
   var prevX, prevY;
   var rotation = 0;
+  var initialAngle = 0;
+
 
   ruler.addEventListener('mousedown', function(e) {
     isDragging = true;
@@ -67,6 +69,12 @@ window.onload = function() {
         isDragging = true;
         prevX = e.touches[0].clientX;
         prevY = e.touches[0].clientY;
+        if (e.touches.length === 2) { // Проверяем, что коснулись двумя пальцами
+           var touch1 = e.touches[0];
+           var touch2 = e.touches[1];
+           initialAngle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX) * (180 / Math.PI);
+           isDragging = true;
+       }
     });
 
     document.addEventListener('touchmove', function(e) {
@@ -85,6 +93,15 @@ window.onload = function() {
 
             prevX = newX;
             prevY = newY;
+        }
+        if (isDragging && e.touches.length === 2) {
+            var touch1 = e.touches[0];
+            var touch2 = e.touches[1];
+            var currentAngle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX) * (180 / Math.PI);
+            var deltaAngle = currentAngle - initialAngle;
+            rotation += deltaAngle;
+            ruler.style.transform = 'rotate(' + rotation + 'deg)';
+            initialAngle = currentAngle;
         }
     });
 
